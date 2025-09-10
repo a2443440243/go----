@@ -64,7 +64,7 @@ func (h *HealthHandler) Ready(c *gin.Context) {
 	// 这里可以添加依赖服务的检查，如数据库连接等
 	// 目前简单返回就绪状态
 	c.JSON(http.StatusOK, gin.H{
-		"status": "ready",
+		"status":    "ready",
 		"timestamp": time.Now(),
 	})
 }
@@ -80,7 +80,7 @@ func (h *HealthHandler) Ready(c *gin.Context) {
 func (h *HealthHandler) Live(c *gin.Context) {
 	// 存活检查，确认服务正在运行
 	c.JSON(http.StatusOK, gin.H{
-		"status": "alive",
+		"status":    "alive",
 		"timestamp": time.Now(),
 	})
 }

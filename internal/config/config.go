@@ -14,7 +14,6 @@ type Config struct {
 	Server   ServerConfig   `mapstructure:"server"`
 	Database DatabaseConfig `mapstructure:"database"`
 	Log      LogConfig      `mapstructure:"log"`
-	Redis    RedisConfig    `mapstructure:"redis"`
 }
 
 // AppConfig 应用配置
@@ -34,22 +33,15 @@ type ServerConfig struct {
 
 // DatabaseConfig 数据库配置
 type DatabaseConfig struct {
-	Driver          string      `mapstructure:"driver"`
-	Host            string      `mapstructure:"host"`
-	Port            int         `mapstructure:"port"`
-	Username        string      `mapstructure:"username"`
-	Password        string      `mapstructure:"password"`
-	Database        string      `mapstructure:"dbname"`
-	SSLMode         string      `mapstructure:"sslmode"`
-	SQLite          SQLiteConfig `mapstructure:"sqlite"`
-	MaxOpenConns    int         `mapstructure:"max_open_conns"`
-	MaxIdleConns    int         `mapstructure:"max_idle_conns"`
-	ConnMaxLifetime int         `mapstructure:"conn_max_lifetime"`
-}
-
-// SQLiteConfig SQLite配置
-type SQLiteConfig struct {
-	Path string `mapstructure:"path"`
+	Driver          string `mapstructure:"driver"`
+	Host            string `mapstructure:"host"`
+	Port            int    `mapstructure:"port"`
+	Username        string `mapstructure:"username"`
+	Password        string `mapstructure:"password"`
+	Database        string `mapstructure:"database"`
+	MaxOpenConns    int    `mapstructure:"max_open_conns"`
+	MaxIdleConns    int    `mapstructure:"max_idle_conns"`
+	ConnMaxLifetime int    `mapstructure:"conn_max_lifetime"`
 }
 
 // LogConfig 日志配置
@@ -57,14 +49,6 @@ type LogConfig struct {
 	Level  string `mapstructure:"level"`
 	Format string `mapstructure:"format"`
 	Output string `mapstructure:"output"`
-}
-
-// RedisConfig Redis配置
-type RedisConfig struct {
-	Host     string `mapstructure:"host"`
-	Port     int    `mapstructure:"port"`
-	Password string `mapstructure:"password"`
-	DB       int    `mapstructure:"db"`
 }
 
 // Load 加载配置
@@ -113,14 +97,12 @@ func setDefaults() {
 	viper.SetDefault("server.idle_timeout", "60s")
 
 	// 数据库默认配置
-	viper.SetDefault("database.driver", "sqlite")
-	viper.SetDefault("database.host", "localhost")
-	viper.SetDefault("database.port", 5432)
-	viper.SetDefault("database.username", "postgres")
+	viper.SetDefault("database.driver", "mysql")
+	viper.SetDefault("database.host", "127.0.0.1")
+	viper.SetDefault("database.port", 3306)
+	viper.SetDefault("database.username", "root")
 	viper.SetDefault("database.password", "")
-	viper.SetDefault("database.dbname", "go_api_scaffold")
-	viper.SetDefault("database.sslmode", "disable")
-	viper.SetDefault("database.sqlite.path", "./data/app.db")
+	viper.SetDefault("database.database", "go_admin")
 	viper.SetDefault("database.max_open_conns", 100)
 	viper.SetDefault("database.max_idle_conns", 10)
 	viper.SetDefault("database.conn_max_lifetime", 3600)
@@ -130,9 +112,4 @@ func setDefaults() {
 	viper.SetDefault("log.format", "json")
 	viper.SetDefault("log.output", "stdout")
 
-	// Redis默认配置
-	viper.SetDefault("redis.host", "localhost")
-	viper.SetDefault("redis.port", 6379)
-	viper.SetDefault("redis.password", "")
-	viper.SetDefault("redis.db", 0)
 }

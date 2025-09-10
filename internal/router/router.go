@@ -8,9 +8,9 @@ import (
 func New() *gin.Engine {
 	// 设置Gin模式
 	gin.SetMode(gin.ReleaseMode)
-	
+
 	// 创建路由器
 	r := gin.New()
-	
+
 	return r
 }

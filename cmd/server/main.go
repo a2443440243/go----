@@ -11,32 +11,17 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	ginSwagger "github.com/swaggo/gin-swagger"
-	swaggerFiles "github.com/swaggo/files"
+
 	"go-api-scaffold/internal/config"
 	"go-api-scaffold/internal/handler"
 	"go-api-scaffold/internal/middleware"
+	"go-api-scaffold/internal/model"
+	"go-api-scaffold/internal/repository"
 	"go-api-scaffold/internal/router"
+	"go-api-scaffold/internal/service"
+	"go-api-scaffold/pkg/database"
 	"go-api-scaffold/pkg/logger"
-
-	_ "go-api-scaffold/docs" // swagger docs
 )
-
-// @title Go API Scaffold
-// @version 1.0
-// @description 一个基于Go语言的RESTful API脚手架框架
-// @termsOfService http://swagger.io/terms/
-
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
-
-// @license.name MIT
-// @license.url https://opensource.org/licenses/MIT
-
-// @host localhost:8080
-// @BasePath /api/v1
-// @schemes http https
 
 func main() {
 	// 加载配置
@@ -48,11 +33,28 @@ func main() {
 	// 初始化日志
 	appLogger := logger.New(cfg.Log.Level)
 
-	// 暂时跳过数据库连接，直接启动服务器
-	log.Println("Starting server without database connection for demo purposes...")
+	// 连接数据库
+	db, err := database.New(cfg.Database)
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+	appLogger.Info("Database connected successfully")
+
+	// 自动迁移数据库表
+	if err := db.AutoMigrate(&model.User{}); err != nil {
+		log.Fatalf("Failed to migrate database: %v", err)
+	}
+	appLogger.Info("Database migration completed")
+
+	// 初始化仓储层
+	userRepo := repository.NewUserRepository(db)
+
+	// 初始化服务层
+	userService := service.NewUserService(userRepo, appLogger)
 
 	// 初始化处理器
 	healthHandler := handler.NewHealthHandler(appLogger)
+	userHandler := handler.NewUserHandler(userService, appLogger)
 
 	// 初始化路由
 	r := router.New()
@@ -61,9 +63,6 @@ func main() {
 	r.Use(middleware.Logger(appLogger))
 	r.Use(middleware.Recovery(appLogger))
 	r.Use(middleware.CORS())
-
-	// Swagger文档路由
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// 注册路由
 	v1 := r.Group("/api/v1")
@@ -75,6 +74,19 @@ func main() {
 			health.GET("/ready", healthHandler.Ready)
 			health.GET("/live", healthHandler.Live)
 		}
+
+		// 用户相关接口
+		users := v1.Group("/users")
+		{
+			users.POST("/", userHandler.Create)
+			users.GET("/:id", userHandler.GetByID)
+			users.PUT("/:id", userHandler.Update)
+			users.DELETE("/:id", userHandler.Delete)
+			users.GET("/", userHandler.List)
+		}
+
+		// 认证相关接口
+		v1.POST("/login", userHandler.Login)
 
 		// 示例API
 		v1.GET("/ping", PingHandler)
@@ -116,14 +128,7 @@ func main() {
 	log.Println("Server exited")
 }
 
-// PingHandler godoc
-// @Summary Ping测试
-// @Description 简单的ping测试接口
-// @Tags 示例API
-// @Accept json
-// @Produce json
-// @Success 200 {object} map[string]interface{} "成功响应"
-// @Router /ping [get]
+// PingHandler Ping测试接口
 func PingHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "pong",
@@ -131,14 +136,7 @@ func PingHandler(c *gin.Context) {
 	})
 }
 
-// VersionHandler godoc
-// @Summary 获取版本信息
-// @Description 获取应用程序版本信息
-// @Tags 示例API
-// @Accept json
-// @Produce json
-// @Success 200 {object} map[string]interface{} "版本信息"
-// @Router /version [get]
+// VersionHandler 获取版本信息
 func VersionHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
