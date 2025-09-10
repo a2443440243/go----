@@ -1,0 +1,252 @@
+# golangci-lint 配置文件
+
+# 运行配置
+run:
+  # 超时时间
+  timeout: 5m
+  
+  # 要分析的文件
+  issues-exit-code: 1
+  
+  # 包含测试文件
+  tests: true
+  
+  # 跳过目录
+  skip-dirs:
+    - vendor
+    - tmp
+    - bin
+    - docs
+    - scripts
+  
+  # 跳过文件
+  skip-files:
+    - ".*\\.pb\\.go$"
+    - ".*\\.gen\\.go$"
+  
+  # 允许并行运行
+  allow-parallel-runners: true
+
+# 输出配置
+output:
+  # 输出格式: colored-line-number|line-number|json|tab|checkstyle|code-climate|junit-xml|github-actions
+  format: colored-line-number
+  
+  # 打印发出的行
+  print-issued-lines: true
+  
+  # 打印检查器名称
+  print-linter-name: true
+  
+  # 使检查器输出不重复
+  uniq-by-line: true
+  
+  # 按路径前缀排序结果
+  sort-results: true
+
+# 启用的检查器
+linters:
+  # 禁用所有默认检查器
+  disable-all: true
+  
+  # 启用特定检查器
+  enable:
+    # 基础检查器
+    - errcheck      # 检查未处理的错误
+    - gosimple      # 简化代码
+    - govet         # Go vet 检查
+    - ineffassign   # 检测无效赋值
+    - staticcheck   # 静态分析
+    - typecheck     # 类型检查
+    - unused        # 检查未使用的代码
+    
+    # 代码风格
+    - gofmt         # 格式化检查
+    - goimports     # import 排序和格式化
+    - misspell      # 拼写检查
+    - unconvert     # 不必要的类型转换
+    - whitespace    # 空白字符检查
+    
+    # 代码质量
+    - dupl          # 重复代码检查
+    - goconst       # 重复字符串检查
+    - gocyclo       # 圈复杂度检查
+    - godot         # 注释句号检查
+    - golint        # Go lint 检查
+    - gosec         # 安全检查
+    - interfacer    # 接口建议
+    - lll           # 行长度检查
+    - maligned      # 结构体字段对齐
+    - prealloc      # 预分配切片
+    - unparam       # 未使用的参数
+    
+    # 错误处理
+    - goerr113      # 错误处理最佳实践
+    - wrapcheck     # 错误包装检查
+    
+    # 性能
+    - bodyclose     # HTTP body 关闭检查
+    - noctx         # HTTP 请求上下文检查
+    
+    # 并发
+    - gocritic      # Go 代码评审
+    - rowserrcheck  # SQL rows.Err 检查
+    - sqlclosecheck # SQL 关闭检查
+
+# 检查器设置
+linters-settings:
+  # errcheck 设置
+  errcheck:
+    # 检查类型断言
+    check-type-assertions: true
+    # 检查空白赋值
+    check-blank: true
+    # 忽略的函数
+    ignore: fmt:.*,io/ioutil:^Read.*
+  
+  # govet 设置
+  govet:
+    # 检查影子变量
+    check-shadowing: true
+    # 启用所有检查
+    enable-all: true
+  
+  # gocyclo 设置
+  gocyclo:
+    # 最小复杂度
+    min-complexity: 15
+  
+  # maligned 设置
+  maligned:
+    # 建议新的结构体字段顺序
+    suggest-new: true
+  
+  # dupl 设置
+  dupl:
+    # 重复代码的最小行数
+    threshold: 100
+  
+  # goconst 设置
+  goconst:
+    # 最小字符串长度
+    min-len: 3
+    # 最小出现次数
+    min-occurrences: 3
+  
+  # lll 设置
+  lll:
+    # 最大行长度
+    line-length: 120
+  
+  # misspell 设置
+  misspell:
+    # 语言
+    locale: US
+  
+  # prealloc 设置
+  prealloc:
+    # 检查简单循环
+    simple: true
+    # 检查范围循环
+    range-loops: true
+    # 检查 for 循环
+    for-loops: false
+  
+  # gosec 设置
+  gosec:
+    # 包含的规则
+    includes:
+      - G101 # 查找硬编码凭据
+      - G102 # 绑定到所有接口
+      - G103 # 审计不安全块的使用
+      - G104 # 审计未检查的错误
+      - G106 # 审计 ssh.InsecureIgnoreHostKey 的使用
+      - G107 # Url 作为污点输入提供给 HTTP 请求
+      - G108 # 通过变量进行分析
+      - G109 # 潜在的整数溢出
+      - G110 # 潜在的 DoS 漏洞
+    # 排除的规则
+    excludes:
+      - G204 # 审计命令执行
+  
+  # gocritic 设置
+  gocritic:
+    # 启用的检查
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    # 禁用的检查
+    disabled-checks:
+      - dupImport
+      - ifElseChain
+      - octalLiteral
+      - whyNoLint
+      - wrapperFunc
+
+# 问题配置
+issues:
+  # 排除使用默认排除规则
+  exclude-use-default: false
+  
+  # 最大问题数量，0 表示无限制
+  max-issues-per-linter: 0
+  
+  # 最大相同问题数量，0 表示无限制
+  max-same-issues: 0
+  
+  # 显示统计信息
+  new: false
+  
+  # 修复问题
+  fix: false
+  
+  # 排除规则
+  exclude-rules:
+    # 排除测试文件的某些检查
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - dupl
+        - gosec
+    
+    # 排除生成的文件
+    - path: \.pb\.go
+      linters:
+        - all
+    
+    # 排除 main 函数的复杂度检查
+    - source: "func main\\("
+      linters:
+        - gocyclo
+    
+    # 排除特定错误消息
+    - text: "Error return value of .((os\\.)?std(out|err)\\..*|print|printf|println|log\\.(Print|Panic|Fatal)).* is not checked"
+      linters:
+        - errcheck
+    
+    # 排除 G104 (未检查错误) 对于某些函数
+    - text: "G104: Errors unhandled"
+      linters:
+        - gosec
+      source: "defer.*\\.(Close|Flush)\\("
+
+# 严重性配置
+severity:
+  # 默认严重性
+  default-severity: error
+  
+  # 大小写敏感
+  case-sensitive: false
+  
+  # 规则
+  rules:
+    - linters:
+        - dupl
+      severity: info
+    - linters:
+        - goconst
+      severity: warning

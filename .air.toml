@@ -1,0 +1,87 @@
+# Air 配置文件 - Go 热重载工具
+
+root = "."
+testdata_dir = "testdata"
+tmp_dir = "tmp"
+
+[build]
+  # 要监视的文件扩展名
+  include_ext = ["go", "tpl", "tmpl", "html", "yaml", "yml", "json"]
+  
+  # 要排除的目录
+  exclude_dir = ["assets", "tmp", "vendor", "testdata", "bin", "docs", ".git", ".idea", ".vscode"]
+  
+  # 要排除的文件
+  exclude_file = []
+  
+  # 要排除的正则表达式
+  exclude_regex = ["_test.go"]
+  
+  # 排除未更改的文件
+  exclude_unchanged = false
+  
+  # 是否跟随符号链接
+  follow_symlink = false
+  
+  # 构建命令
+  cmd = "go build -o ./tmp/main ./cmd/server/main.go"
+  
+  # 二进制文件路径
+  bin = "tmp/main"
+  
+  # 是否包含子目录
+  include_dir = []
+  
+  # 构建完成后执行的命令
+  post_cmd = []
+  
+  # 构建前执行的命令
+  pre_cmd = []
+  
+  # 环境变量
+  env_vars = {}
+  
+  # 构建参数
+  args_bin = []
+  
+  # 构建日志
+  log = "build-errors.log"
+  
+  # 发送中断信号前的延迟时间（纳秒）
+  delay = 1000
+  
+  # 停止运行旧的二进制文件前的延迟时间（纳秒）
+  stop_on_root = false
+  
+  # 重新运行二进制文件或命令的延迟时间（纳秒）
+  rerun = false
+  
+  # 重新运行延迟时间（毫秒）
+  rerun_delay = 500
+  
+  # 发送中断信号
+  send_interrupt = false
+  
+  # 发送中断信号后的延迟时间（纳秒）
+  kill_delay = "0s"
+
+[color]
+  # 自定义每个部分显示的颜色
+  main = "magenta"
+  watcher = "cyan"
+  build = "yellow"
+  runner = "green"
+
+[log]
+  # 显示日志时间
+  time = false
+  
+  # 只显示主要日志
+  main_only = false
+
+[misc]
+  # 删除每次构建的旧二进制文件
+  clean_on_exit = true
+  
+  # 在构建时显示监视的文件
+  reload_on_save = true

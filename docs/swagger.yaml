@@ -1,0 +1,110 @@
+basePath: /api/v1
+definitions:
+  handler.HealthResponse:
+    properties:
+      status:
+        type: string
+      timestamp:
+        type: string
+      uptime:
+        type: string
+      version:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: 一个基于Go语言的RESTful API脚手架框架
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Go API Scaffold
+  version: "1.0"
+paths:
+  /health/check:
+    get:
+      consumes:
+      - application/json
+      description: 检查服务基本健康状态
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 健康状态信息
+          schema:
+            $ref: '#/definitions/handler.HealthResponse'
+      summary: 基础健康检查
+      tags:
+      - 健康检查
+  /health/live:
+    get:
+      consumes:
+      - application/json
+      description: 检查服务是否正在运行
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 存活状态
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 存活检查
+      tags:
+      - 健康检查
+  /health/ready:
+    get:
+      consumes:
+      - application/json
+      description: 检查服务是否准备好接收请求
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 就绪状态
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 就绪检查
+      tags:
+      - 健康检查
+  /ping:
+    get:
+      consumes:
+      - application/json
+      description: 简单的ping测试接口
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Ping测试
+      tags:
+      - 示例API
+  /version:
+    get:
+      consumes:
+      - application/json
+      description: 获取应用程序版本信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 版本信息
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取版本信息
+      tags:
+      - 示例API
+schemes:
+- http
+- https
+swagger: "2.0"
